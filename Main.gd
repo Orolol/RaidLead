@@ -43,6 +43,9 @@ func _on_MainTimer_timeout():
 	$HUD.refreshListMember(GlobalVar.playerGuild.guildMembers)
 	$HUD.timeoutChildren()
 
+	for d  in GlobalVar.runningDungeon :
+		d.timeout()
+
 	if len(availableCharToRecruit) < 3:
 		var character = CharManager.generateRandomChar()
 		availableCharToRecruit.push_front(character)

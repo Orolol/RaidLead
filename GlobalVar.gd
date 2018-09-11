@@ -4,6 +4,7 @@ extends Node
 var current_scene = null
 var globalCharTab = []
 var availableDungeonList = []
+var runningDungeon = []
 var playerGuild
 
 func _ready():

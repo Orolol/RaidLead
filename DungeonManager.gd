@@ -1,29 +1,33 @@
 extends Panel
 
+var indexDun = 0
 
 class Dungeon:
+	var id
 	var name
 	var difficulty
 	var nbBoss
 	var duration
-	func _init(a,b,c,d):
+	var nbPlayer
+	func _init(ind, a,b,c,d,e):
+		self.id = ind
 		self.name = a
 		self.difficulty = b
 		self.nbBoss = c
 		self.duration = d
-	
-
+		self.nbPlayer = d
 
 func _ready():
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("LowLvl Dungon", 50, 3, 30))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("midvl Dungon", 80, 3, 40))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("hard Dungon", 100, 4, 50))
-	print("DUNGEONS", GlobalVar.availableDungeonList)
 	pass
+	
 
 func initDungeons():
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("LowLvl Dungon", 50, 3, 30))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("midvl Dungon", 80, 3, 40))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new("hard Dungon", 100, 4, 50))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(), "LowLvl Dungon", 50, 3, 30,5))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"midvl Dungon", 80, 3, 40,5))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"hard Dungon", 100, 4, 50,5))
 	print("DUNGEONS", GlobalVar.availableDungeonList)
 
+
+func getInd():
+	indexDun += 1 
+	return indexDun
