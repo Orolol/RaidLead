@@ -22,9 +22,9 @@ func _ready():
 	
 
 func initDungeons():
-	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(), "LowLvl Dungon", 50, 3, 30,5))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"midvl Dungon", 80, 3, 40,5))
-	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"hard Dungon", 100, 4, 50,5))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(), "LowLvl Dungon", 50, 3, 10,5))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"midvl Dungon", 80, 3, 15,5))
+	GlobalVar.availableDungeonList.push_front(Dungeon.new(getInd(),"hard Dungon", 100, 4, 20,5))
 	print("DUNGEONS", GlobalVar.availableDungeonList)
 
 

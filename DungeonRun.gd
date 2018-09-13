@@ -15,23 +15,67 @@ class RunningDungeon:
 	var dungeon
 	var chars
 	var progression
+	var bossKilled
 	var status
 	func _init(d,c,b):
 		self.dungeon = d
 		self.chars = c
 		self.progression = 0
+		self.bossKilled = 0
 		self.status = "running"
+	func getDiff():
+		var totalPower = 0
+		var tank = 0
+		var dps = 0
+		var healer = 0
+		for f in self.chars:
+			totalPower += int(f.skill) + int(f.iLevel)
+			if f.charClass == "Healer":
+				healer += 1
+			if f.charClass == "Tank":
+				tank += 1
+			if f.charClass == "Dps":
+				dps += 1
+		
+		totalPower *= 0.1
+		if tank < 1:
+			totalPower *= 0.3
+		if healer < 1:
+			totalPower *= 0.3
+		return ((totalPower / dungeon.difficulty) * (100 - (5 * bossKilled))) 
+	func resolveFight(bossInd):
+		var combatRoll = rand_range(0, 100)
+		print(str(combatRoll) + " VS " + str(( 100 - self.getDiff())))
+		if combatRoll < ( 100 - self.getDiff()):
+			return false
+		return true
 	func timeout():
 		if self.status == "running" :
-			self.progression += 20
+			self.progression += 1
+			if self.progression % (self.dungeon.duration / self.dungeon.nbBoss) == 0:
+				print("BOSS FIGHT !")
+				if resolveFight(self.bossKilled):
+					self.bossKilled += 1 
+					print("BOSS Down !")
+				else:
+					self.progression -= (self.dungeon.duration / self.dungeon.nbBoss) / 2
+					print("Retry !")
 			print(self.status+ ' ' + self.dungeon.name + ' ' + str(self.progression) + "%"  )
-		if self.progression == 100:
-			self.status = "complete"
-			for c in self.chars:
-				c.iLevel += 5
-				c.skill += 5
-			print('complete  ' + self.dungeon.name  )
-			GlobalVar.runningDungeon.erase(self)
+		if self.progression == self.dungeon.duration:
+			print("FINAL BOSS FIGHT !")
+			if resolveFight(self.bossKilled):
+				self.bossKilled += 1 
+				print("BOSS Down !")
+				self.status = "complete"
+				for c in self.chars:
+					c.iLevel += 5
+					c.skill += 5
+				print('complete  ' + self.dungeon.name  )
+				GlobalVar.runningDungeon.erase(self)
+			else:
+				self.progression -= (self.dungeon.duration / self.dungeon.nbBoss) / 2
+				print("Retry !")
+			
 
 func _ready():
 	# Called when the node is added to the scene for the first time.
@@ -50,6 +94,8 @@ func getDungeonById(id):
 
 func runDungeon():
 	GlobalVar.runningDungeon.push_front(RunningDungeon.new(chosenDungeon, selectedChar, getDiff()))
+	selectedChar =  []
+	chosenDungeon = null
 
 func refreshListMember():
 	for child in $ListMemberContainer/ScrollContainer/ListMemberOnline.get_children():
@@ -123,6 +169,8 @@ func removeChar(i):
 		if i.id == j.id:
 			selectedChar.erase(j)
 	refreshListMember()
+
+
 
 func timeout():
 	refreshListMember()
