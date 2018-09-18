@@ -12,9 +12,9 @@ class Guild:
 		self.guildMembers = []
 	func addMember(member):
 		self.guildMembers.push_front(member)
-	func timeout():
+	func timeout(dayPeriod):
 		for member in self.guildMembers:
-			member.timeout()
+			member.timeout(dayPeriod)
 
 
 func _ready():

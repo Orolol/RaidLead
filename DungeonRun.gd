@@ -5,6 +5,7 @@ extends Panel
 # var b = "textvar"
 const listMemberScn = preload("res://GuildMemberDungeon.tscn")
 const listDungeonScn = preload("res://DungeonInList.tscn")
+const DungeonProgress = preload("res://DungeonProgress.tscn")
 
 var selectedChar = []
 var chosenDungeon = null
@@ -23,12 +24,14 @@ class RunningDungeon:
 		self.progression = 0
 		self.bossKilled = 0
 		self.status = "running"
+		for c in chars:
+			c.status = "in dungeon"
 	func getDiff():
 		var totalPower = 0
 		var tank = 0
 		var dps = 0
 		var healer = 0
-		for f in self.chars:
+		for f in chars:
 			totalPower += int(f.skill) + int(f.iLevel)
 			if f.charClass == "Healer":
 				healer += 1
@@ -45,36 +48,44 @@ class RunningDungeon:
 		return ((totalPower / dungeon.difficulty) * (100 - (5 * bossKilled))) 
 	func resolveFight(bossInd):
 		var combatRoll = rand_range(0, 100)
-		print(str(combatRoll) + " VS " + str(( 100 - self.getDiff())))
-		if combatRoll < ( 100 - self.getDiff()):
+		# print(str(combatRoll) + " VS " + str(( 100 -getDiff())))
+		if combatRoll < ( 100 - getDiff()):
 			return false
 		return true
+	func abandon():
+		for f in chars:
+			f.morale -= 5
+		GlobalVar.runningDungeon.erase(self)
+	func complete():
+		for f in chars:
+			f.iLevel += 5
+		GlobalVar.runningDungeon.erase(self)
 	func timeout():
-		if self.status == "running" :
-			self.progression += 1
-			if self.progression % (self.dungeon.duration / self.dungeon.nbBoss) == 0:
-				print("BOSS FIGHT !")
-				if resolveFight(self.bossKilled):
-					self.bossKilled += 1 
+		if status != "complete":
+			if status == "running" :
+				progression += 1
+				if progression % (dungeon.duration /dungeon.nbBoss) == 0:
+					print("BOSS FIGHT !")
+					if resolveFight(bossKilled):
+						bossKilled += 1 
+						print("BOSS Down !")
+					else:
+						progression -= (dungeon.duration /dungeon.nbBoss) / 2
+						print("Retry !")
+				print(status+ ' ' +dungeon.name + ' ' + str(progression) + "%"  )
+			if progression ==dungeon.duration:
+				print("FINAL BOSS FIGHT !")
+				if resolveFight(bossKilled):
+					bossKilled += 1 
 					print("BOSS Down !")
+					status = "complete"
+					for c in chars:
+						c.iLevel += 5
+						c.skill += 5
+					print('complete  ' +dungeon.name  )
 				else:
-					self.progression -= (self.dungeon.duration / self.dungeon.nbBoss) / 2
+					progression -= (dungeon.duration /dungeon.nbBoss) / 2
 					print("Retry !")
-			print(self.status+ ' ' + self.dungeon.name + ' ' + str(self.progression) + "%"  )
-		if self.progression == self.dungeon.duration:
-			print("FINAL BOSS FIGHT !")
-			if resolveFight(self.bossKilled):
-				self.bossKilled += 1 
-				print("BOSS Down !")
-				self.status = "complete"
-				for c in self.chars:
-					c.iLevel += 5
-					c.skill += 5
-				print('complete  ' + self.dungeon.name  )
-				GlobalVar.runningDungeon.erase(self)
-			else:
-				self.progression -= (self.dungeon.duration / self.dungeon.nbBoss) / 2
-				print("Retry !")
 			
 
 func _ready():

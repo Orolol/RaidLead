@@ -20,26 +20,48 @@ class Character:
 	var skill
 	func _init(var1, var2, var3):
 		print('ok')
-		self.energy = int(rand_range(50,60))
-		self.name = var1
-		self.status = "online"
-		self.id = var2
-		self.maxEnergy = int(rand_range(50,150))
-		self.iLevel = int(rand_range(50,150))
-		self.skill = int(rand_range(50,150))
-		self.charClass = var3
-	func timeout():
-		if self.status == "online":
-			self.energy -= 1
-			if self.energy < 0:
-				self.status = "offline"
-				print( self.name+ ' lougout !')
-		elif  self.status == "offline":
-			self.energy += 1
-			if self.energy > 100:
-				self.status = "online"
-				print( self.name+ ' logon !')
-				self.energy = maxEnergy
+		energy = int(rand_range(50,60))
+		name = var1
+		status = "online"
+		id = var2
+		maxEnergy = int(rand_range(50,150))
+		iLevel = int(rand_range(50,150))
+		skill = int(rand_range(50,150))
+		charClass = var3
+	func timeout(dayPeriod):
+		if status == "online":
+			if dayPeriod == "earlyNight":
+				energy -= 1
+			if dayPeriod == "lateNight":
+				energy -= 1
+			energy -= 1
+			if energy < 0:
+				status = "offline"
+				# print( name+ ' lougout !')
+			if dayPeriod == "lateNight" && energy < 50:
+				status = "offline"
+				# print( name+ ' lougout !')
+			if dayPeriod == "earlyNight" && energy < 20:
+				status = "offline"
+				# print( name+ ' lougout !')
+		if status == "in dungeon":
+			if energy > 0:
+				if dayPeriod == "earlyNight":
+					energy -= 1
+				if dayPeriod == "lateNight":
+					energy -= 1
+				energy -= 1
+			else:
+				print(name + ' is exhausted') 
+		elif  status == "offline":
+			energy += 1
+			if energy > 100:
+				status = "online"
+				# print( name+ ' logon !')
+				energy = maxEnergy
+			if dayPeriod == "evening":
+				status = "online"
+				# print( name+ ' logon !')
 
 
 
